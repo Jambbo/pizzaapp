@@ -28,7 +28,7 @@ export const Home = () => {
     const order = orderLabel?.toLowerCase().replace(/[()]/g, '') || 'desc';
 
 
-    const fetchPizzas = () => {
+    const fetchPizzas = async () => {
         setIsLoading(true);
         const baseUrl = `https://6851d68f8612b47a2c0b62f3.mockapi.io/api/v1/items`;
 
@@ -46,18 +46,17 @@ export const Home = () => {
 
         const url = `${baseUrl}?${params.toString()}`;
 
-        axios.get(url)
-            .then((res) => {
-                setPizzas(res.data);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                if (err.response && err.response.status === 404) {
-                    setPizzas([]);
-                } else {
-                    console.log('Error fetching pizzas:', err);
-                }
-            })
+        try{
+            const res = await axios.get(url);
+            setPizzas(res.data);
+        }catch (error){
+            console.log('ERROR', error);
+            alert("Error while requesting pizzas");
+        }finally {
+            setIsLoading(false);
+        }
+
+
         window.scrollTo(0, 70);
     }
 
@@ -100,7 +99,7 @@ export const Home = () => {
     const fetchedPizzas =
         pizzas
             .map((obj) => (
-                <PizzaBlock key={obj.id} product={obj}/>
+                <PizzaBlock key={obj.id} {...obj}/>
             ));
 
     const skeletons = [...new Array(8)].map((_, index) => <Skeleton key={index}/>)

@@ -1,7 +1,24 @@
 import React from 'react'
 import {Link} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {CartItem} from "../components/CartItem";
+import {clearItems} from "../redux/slices/cartSlice";
+import {CartEmpty} from "../components/CartEmpty";
 
 export const Cart = () => {
+    const dispatch = useDispatch();
+    const {totalPrice, totalCount , items} = useSelector((state) => state.cart);
+
+    const onClickClear = () => {
+        if(window.confirm('Clear the bucket?')){
+            dispatch(clearItems());
+        }
+    }
+
+    if(!totalCount){
+        return <CartEmpty/>
+    }
+
     return (
         <div className="container container--cart">
             <div className="cart">
@@ -34,7 +51,9 @@ export const Cart = () => {
                         </svg>
                         Cart
                     </h2>
-                    <div className="cart__clear">
+                    <div
+                        onClick={onClickClear}
+                        className="cart__clear">
                         <svg
                             width="20"
                             height="20"
@@ -71,17 +90,21 @@ export const Cart = () => {
                     </div>
                 </div>
                 <div className="content__items">
-                    <p>Items </p>
+                    {
+                        items.map(item => <CartItem key={item.id}{...item} />
+                        )
+
+                    }
                 </div>
                 <div className="cart__bottom">
                     <div className="cart__bottom-details">
             <span>
               {' '}
-                Total pizzas: <b>10 items</b>{' '}
+                Total pizzas: <b>{totalCount} items</b>{' '}
             </span>
                         <span>
               {' '}
-                            Amount to pay: <b>99 $</b>{' '}
+                            Amount to pay: <b>{totalPrice} $</b>{' '}
             </span>
                     </div>
                     <div className="cart__bottom-buttons">
