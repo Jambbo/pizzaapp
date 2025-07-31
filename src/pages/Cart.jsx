@@ -10,7 +10,7 @@ export const Cart = () => {
     const {totalPrice, totalCount , items} = useSelector((state) => state.cart);
 
     const onClickClear = () => {
-        if(window.confirm('Clear the bucket?')){
+        if(window.confirm('Empty the cart?')){
             dispatch(clearItems());
         }
     }
