@@ -1,10 +1,10 @@
 import React, {useContext, useEffect, useRef, useState} from 'react'
 import qs from 'qs';
-import axios from "axios";
-import {useSelector, useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from 'react-router-dom'
 import {setCategoryId, setFilters} from "../redux/slices/filterSlice";
-import {setItems} from "../redux/slices/pizzaSlice"
+import {setItems} from '../redux/slices/pizzaSlice';
+import {fetchPizzas} from "../redux/slices/pizzaSlice"
 import {Categories} from "../components/Categories";
 import {Sort} from "../components/Sort";
 import {Skeleton} from "../components/PizzaBlock/Skeleton";
@@ -16,20 +16,18 @@ import {SearchContext} from "../App";
 export const Home = () => {
     const navigate = useNavigate();
     const {categoryId, sortType, currentPage} = useSelector(state => state.filter);
-    const items = useSelector(state => state.pizza.items);
+    const {items, status} = useSelector(state => state.pizza);
     const dispatch = useDispatch();
     const isSearch = useRef(false);
     const isMounted = useRef(false);
     const {searchValue} = useContext(SearchContext);
-    const [isLoading, setIsLoading] = useState(true);
 
     const [sortBy, orderLabel] = sortType.split(' ');
     const order = orderLabel?.toLowerCase().replace(/[()]/g, '') || 'desc';
 
 
-    const fetchPizzas = async () => {
-        setIsLoading(true);
-        const baseUrl = `https://6851d68f8612b47a2c0b62f3.mockapi.io/api/v1/items`;
+    function buildUrl() {
+        const baseUrl = `https://-6851d68f8612b47a2c0b62f3.mockapi.io/api/v1/items`;
 
         const params = new URLSearchParams();
         if (categoryId !== 0) {
@@ -43,18 +41,15 @@ export const Home = () => {
         params.append('sortBy', sortBy);
         params.append('order', order);
 
-        const url = `${baseUrl}?${params.toString()}`;
+        return `${baseUrl}?${params.toString()}`;
+    }
 
-        try {
-            const {data} = await axios.get(url);
-            dispatch(setItems(data));
-        } catch (error) {
-            console.log('ERROR', error);
-            alert("Error while requesting pizzas");
-        } finally {
-            setIsLoading(false);
-        }
+    const getPizzas = async () => {
+        const url = buildUrl();
 
+        dispatch(fetchPizzas(
+            {url}
+        ));
 
         window.scrollTo(0, 70);
     }
@@ -89,7 +84,7 @@ export const Home = () => {
     //if there was a 1st render, then we request pizzas
     useEffect(() => {
         if (!isSearch.current) {
-            fetchPizzas();
+            getPizzas();
         }
         isSearch.current = false;
     }, [categoryId, sortType, searchValue, currentPage]);
@@ -100,7 +95,6 @@ export const Home = () => {
             .map((obj) => (
                 <PizzaBlock key={obj.id} {...obj}/>
             ));
-
     const skeletons = [...new Array(8)].map((_, index) => <Skeleton key={index}/>)
 
 
@@ -111,11 +105,22 @@ export const Home = () => {
                 <Sort/>
             </div>
             <h2 className="content__title">All pizzas</h2>
-            <div className="content__items">
-                {
-                    isLoading ? skeletons : fetchedPizzas
-                }
-            </div>
+            {
+                status === 'error' ?
+                    <div className="content__error-info">
+                        <h2>The error happened :(</h2>
+                        <p>
+                            Failure while fetching the pizzas. Try again later.
+                        </p>
+                    </div>
+                    :
+                    <div className="content__items">
+                        {
+                            status === 'loading' ? skeletons : fetchedPizzas
+                        }
+                    </div>
+            }
+
             <Pagination/>
         </div>
     )
