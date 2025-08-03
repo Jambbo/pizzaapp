@@ -3,9 +3,17 @@ import axios from "axios";
 
 //reusable asynchronous action
 export const fetchPizzas = createAsyncThunk('pizza/fetchPizzasStatus',
-    async ({url}) => {
+    async ({url}, thunkAPI) => {
         const {data} = await axios.get(url);
-        return data;
+        // console.log(thunkAPI.getState());
+
+
+        if(data.length === 0){
+            //to force to go into the .rejected case in extraReducers
+            return thunkAPI.rejectWithValue("Pizza api didn't return any items. Array is empty.");
+        }
+
+        return thunkAPI.fulfillWithValue(data);
     }
 )
 
@@ -30,10 +38,12 @@ const pizzaSlice = createSlice({
                 state.items = [];
             })
             .addCase(fetchPizzas.fulfilled, (state, action) => {
+                console.log(action, 'fulfilled');
                 state.items = action.payload;
                 state.status = 'success';
             })
-            .addCase(fetchPizzas.rejected, (state)=>{
+            .addCase(fetchPizzas.rejected, (state, action)=>{
+                console.log(action, 'rejected');
                 state.status = 'error';
                 state.items = [];
             })

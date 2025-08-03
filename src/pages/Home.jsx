@@ -27,7 +27,7 @@ export const Home = () => {
 
 
     function buildUrl() {
-        const baseUrl = `https://-6851d68f8612b47a2c0b62f3.mockapi.io/api/v1/items`;
+        const baseUrl = `https://6851d68f8612b47a2c0b62f3.mockapi.io/api/v1/items`;
 
         const params = new URLSearchParams();
         if (categoryId !== 0) {
