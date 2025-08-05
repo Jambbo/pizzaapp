@@ -6,14 +6,7 @@ export const fetchPizzas = createAsyncThunk('pizza/fetchPizzasStatus',
     async ({url}, thunkAPI) => {
         const {data} = await axios.get(url);
         // console.log(thunkAPI.getState());
-
-
-        if(data.length === 0){
-            //to force to go into the .rejected case in extraReducers
-            return thunkAPI.rejectWithValue("Pizza api didn't return any items. Array is empty.");
-        }
-
-        return thunkAPI.fulfillWithValue(data);
+        return data;
     }
 )
 
@@ -49,6 +42,8 @@ const pizzaSlice = createSlice({
             })
     }
 });
+
+export const selectPizzaData = (state) => state.pizza;
 
 export const {setItems} = pizzaSlice.actions;
 
