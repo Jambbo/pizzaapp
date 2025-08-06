@@ -2,8 +2,12 @@ import React, {useEffect, useState} from 'react'
 import {useParams, useNavigate} from "react-router-dom";
 import axios from "axios";
 
-export const FullPizza = () => {
-    const [pizzaData, setPizzaData] = useState();
+export const FullPizza: React.FC = () => {
+    const [pizzaData, setPizzaData] = useState<{
+        imageUrl: string;
+        name: string;
+        price: number;
+    }>();
     const navigate = useNavigate();
     const {id} = useParams();
 
@@ -14,8 +18,6 @@ export const FullPizza = () => {
             try {
                 const {data} = await axios.get(url);
                 setPizzaData(data);
-                console.log('1111')
-                console.log(pizzaData);
             } catch (err) {
                 navigate("/");
                 alert('Error while fetching pizzas.')
@@ -25,7 +27,7 @@ export const FullPizza = () => {
         }, [])
 
     if(!pizzaData){
-        return 'Loading...';
+        return <>'Loading...'</>;
     }
 
     return (

@@ -11,7 +11,7 @@ import {PizzaBlock} from "../components/PizzaBlock";
 
 import {Pagination} from "../components/Pagination";
 
-export const Home = () => {
+export const Home: React.FC = () => {
     const navigate = useNavigate();
     const {categoryId, sortType, currentPage, searchValue} = useSelector(selectFilter);
     const {items, status} = useSelector(selectPizzaData);
@@ -34,7 +34,7 @@ export const Home = () => {
             params.append('search', searchValue);
         }
         params.append('page', currentPage);
-        params.append('limit', 4);
+        params.append('limit', "4");
         params.append('sortBy', sortBy);
         params.append('order', order);
 
@@ -89,7 +89,7 @@ export const Home = () => {
 
     const fetchedPizzas =
         items
-            .map((obj) => (
+            .map((obj: any) => (
                 <Link key={obj.id} to={`/pizza/${obj.id}`}>
                     <PizzaBlock key={obj.id} {...obj}/>
                 </Link>
@@ -100,7 +100,7 @@ export const Home = () => {
     return (
         <div className="container">
             <div className="content__top">
-                <Categories value={categoryId} onClickCategory={(id) => dispatch(setCategoryId(id))}/>
+                <Categories value={categoryId} onClickCategory={(id: number) => dispatch(setCategoryId(id))}/>
                 <Sort/>
             </div>
             <h2 className="content__title">All pizzas</h2>

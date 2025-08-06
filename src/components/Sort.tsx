@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import {useSelector, useDispatch} from "react-redux";
 import {selectSortType, setSortType} from '../redux/slices/filterSlice'
 
-const sorts = {
+const sorts: Record<string, string> = {
     "rating (ASC)": "popularity (ASC)",
     "rating (DESC)": "popularity (DESC)",
     "popularity (ASC)": "rating (ASC)",
@@ -14,24 +14,28 @@ const sorts = {
     "alphabet (ASC)": "name (ASC)",
     "alphabet (DESC)": "name (DESC)",
 };
-const sortedBy = ["popularity (ASC)", "popularity (DESC)", "price (ASC)", "price (DESC)", "alphabet (ASC)", "alphabet (DESC)"];
+const sortedBy: string[] = [
+    "popularity (ASC)", "popularity (DESC)",
+    "price (ASC)", "price (DESC)",
+    "alphabet (ASC)", "alphabet (DESC)"
+];
 
 
 export function Sort() {
     const sort = useSelector(selectSortType);
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-    const sortRef = useRef();
+    const sortRef = useRef<HTMLDivElement>(null);
 
 
-    const onClickListItem = (sortType) => {
+    const onClickListItem = (sortType: string) => {
         dispatch(setSortType(sortType));
         setOpen(prevState => !prevState)
     };
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!event.composedPath().includes(sortRef.current)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (sortRef.current && !event.composedPath().includes(sortRef.current)) {
                 setOpen(false);
             }
         }
